@@ -1,0 +1,40 @@
+﻿@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+body
+{
+    font-family: 'Ubuntu', sans-serif;
+    background-image: url(../../Graphics/languagesCover.jpg);
+    background-repeat: no-repeat;
+    background-size: 90%;
+    background-color: #55BCBB;
+    background-position: 85px 200px;
+}
+
+#LangIcon {
+    width: 50%;
+}
+
+#LanguageName {
+    width: 50%;
+    font-size: 25px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;   
+}
+
+#LanguageName+p {
+    display: inline;
+    position: relative;
+    top: 8px;
+    font-family: 'TYPOGRAPH PRO';
+    max-width: 50px;
+}
+
+#LangTable {
+    background-color: rgba(230, 230, 230, .9);
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+#LangIcon+img {
+    margin: 5px 15px;
+}

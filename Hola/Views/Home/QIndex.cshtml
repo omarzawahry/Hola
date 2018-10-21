@@ -1,0 +1,206 @@
+﻿@model Hola.Models.Counter
+@using Hola.Models;
+@{
+    ViewBag.Title = "Practice";
+}
+@section styles{
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/Content/style.css">
+
+    <!--IndexStyles-->
+    <link href="~/Content/IndexStyles.css" rel="stylesheet" />
+    <style>
+        body {
+            background-image: url(../../Graphics/languagesCover.jpg);
+            background-repeat: no-repeat;
+            background-size: 90%;
+            background-color: #55BCBB;
+            background-position: 85px 200px;
+        }
+    </style>
+}
+<br /><br /><br /><br />
+<div id="main-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="jumbotron" id="jumbo">
+                @using (Hola.Models.ApplicationDbContext DB = new Hola.Models.ApplicationDbContext())
+                {
+                    <!-- lists -->
+                    var QuesList = DB.Questions.Where(w => w.LanguageID == @Model.LanguageSelected && w.Level == @Model.LevelSelected).Select(w => w.QuestionText).ToList();
+
+                    var QuesEnglishList = DB.Questions.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.QuestionEnglish).ToList();
+
+                    #region Choices
+                    var correctList = DB.Questions.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.CorrectAnswer).ToList();
+
+                    var choiceAList = DB.Questions.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.ChoiceA).ToList();
+
+                    var choiceBList = DB.Questions.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.ChoiceB).ToList();
+
+                    var choiceCList = DB.Questions.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.ChoiceC).ToList();
+
+                    var choiceDList = DB.Questions.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.ChoiceD).ToList();
+                    #endregion
+
+                    var audioList = DB.Questions.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.QuestionVoicePath).ToList();
+
+                    //var imgsList = DB.Words.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.ImagePath).ToList();
+
+                    if (@Model.WordNum >= 0 && Model.WordNum < @QuesList.Count)
+                    {
+                        <!--audio icon-->
+                        <span class="pull-right">
+                            <a href="#" id="audioIcon"><img id="audioIconImg" src="../../Graphics/speaker.png" /></a>
+                        </span>
+
+                        <!--Word Image-->
+                        @*<div id="wordImgDiv">
+                            <img id="" src="../../@imgsList[Model.WordNum]" />
+                        </div>*@
+
+                        <!--Question in English-->
+                        <h5 id="wordEnglish">@QuesEnglishList[@Model.WordNum]</h5>
+                        <hr />
+                        <!--Question-->
+                        <h2 id="wordText" style="text-align: center;"><b>@QuesList[@Model.WordNum]</b></h2>
+                        <hr />
+
+                        <button style="display: none;" id="corrBtn" class="btn btn-secondary"
+                                type="button">
+                            @correctList[@Model.WordNum]
+                        </button>
+
+                        <div style="text-align:center; margin: auto;" class="text-center">
+                            <!--ChoiceA-->
+                            <button id="ABtn" class="btn btn-secondary"
+                                    type="button" style="margin: 10px 50px;">
+                                @choiceAList[@Model.WordNum]
+                            </button>
+                            <!--ChoiceB-->
+                            <button id="BBtn" class="btn btn-secondary"
+                                    type="button" style="margin: 10px 50px;"
+                                    value=@choiceBList[@Model.WordNum] onclick="">
+                                @choiceBList[@Model.WordNum]
+                            </button>
+                            <br />
+
+                            <!--ChoiceC-->
+                            <button id="CBtn" class="btn btn-secondary"
+                                    type="button" style="margin: 10px 50px;"
+                                    value=@choiceCList[@Model.WordNum] onclick="">
+                                @choiceCList[@Model.WordNum]
+                            </button>
+
+                            <!--ChoiceD-->
+                            <button id="DBtn" class="btn btn-secondary"
+                                    type="button" style="margin: 10px 50px;"
+                                    value=@choiceDList[@Model.WordNum] onclick="">
+                                @choiceDList[@Model.WordNum]
+                            </button>
+                        </div>
+
+                        <audio id="wordAudio" src="../../@audioList[@Model.WordNum]" autoplay></audio>
+                    }
+
+                    if (Model.IsLevelDone)
+                    {
+                        <!--Finish Button-->
+                        <button id="nextBtn" class="btn btn-success pull-right"
+                                type="button"
+                                value="Next" data-toggle="modal" data-target="#levelDoneModal" @*onclick="location.href='@Url.Action("Levels", "Home", new Counter {LanguageSelected=Model.LanguageSelected}, null)'"*@>
+                            Finish
+                        </button>
+
+                    }
+                    else
+                    {
+                        <span class="pull-right">
+                            <!--Skip Button-->
+                            <button id="skiptBtn" class="btn btn-default"
+                                    type="button" style="margin: 0px 10px"
+                                    value="Next" onclick="location.href='@Url.Action("NextQues", "Home", new Counter {LanguageSelected=Model.LanguageSelected, LevelSelected =Model.LevelSelected, WordNum =Model.WordNum }, null)'">
+                                Skip
+                            </button>
+                            <!--Next Button-->
+                            <button id="nextBtn" class="btn btn-primary"
+                                    type="button" style="margin: 0px 10px"
+                                    value="Next" onclick="location.href='@Url.Action("NextQues", "Home", new Counter {LanguageSelected=Model.LanguageSelected, LevelSelected =Model.LevelSelected, WordNum =Model.WordNum }, null)'">
+                                Next
+                            </button>
+                        </span>  
+                    }
+                }
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="levelDoneModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Level @Model.LevelSelected Completed Succesfully :D</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="text-align: center;">
+                            <h3>Congratulations !!</h3>
+                            <i class="fas fa-check-circle" style="font-size:150px; color: #3f883f"></i>
+                        </div>
+                        <div class="modal-footer">
+                            <!--Again-->
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("NextQues", "Home", new Counter {LanguageSelected=Model.LanguageSelected, LevelSelected =Model.LevelSelected, WordNum=Model.WordNum, IsLevelDone= false }, null)'">Practice again <i class="fas fa-undo"></i></button>
+
+                            <!--Next level-->
+                            <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("NextQues", "Home", new Counter {LanguageSelected = Model.LanguageSelected, WordNum = 0, LevelSelected = Model.LevelSelected+1, IsLevelDone=false}, null)'">Next level <i class="fas fa-angle-double-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section  Scripts {
+<script>
+    $(document).ready(function () {
+            //General variables
+            var wordAudio = document.getElementById("wordAudio");
+
+            $('.body-content').hide();
+            $('.body-content').fadeIn(800);
+            $('#audioIcon').click(function () {
+                wordAudio.paused == true ? wordAudio.play() : wordAudio.pause();
+            });
+
+            //clicking a choice button and checking if the answer is true
+            $("#ABtn").click(function () {
+                if ($('#ABtn').text().trim() == $('#corrBtn').text().trim()) {
+                    $("#ABtn").removeClass().addClass("btn btn-success");
+                } else {
+                    $("#ABtn").removeClass().addClass("btn btn-danger");
+                }
+            });
+            $("#BBtn").click(function () {
+                if ($('#BBtn').text().trim() == $('#corrBtn').text().trim()) {
+                    $("#BBtn").removeClass().addClass("btn btn-success");
+                } else {
+                    $("#BBtn").removeClass().addClass("btn btn-danger");
+                }
+            });
+            $("#CBtn").click(function () {
+                if ($('#CBtn').text().trim() == $('#corrBtn').text().trim()) {
+                    $("#CBtn").removeClass().addClass("btn btn-success");
+                } else {
+                    $("#CBtn").removeClass().addClass("btn btn-danger");
+                }           });
+            $("#DBtn").click(function () {
+                if ($('#DBtn').text().trim() == $('#corrBtn').text().trim()) {
+                    $("#DBtn").removeClass().addClass("btn btn-success");
+                } else {
+                    $("#DBtn").removeClass().addClass("btn btn-danger");
+                }
+            });
+        });
+</script>
+}

@@ -1,0 +1,53 @@
+﻿@model Hola.Models.Counter
+@using Hola.Models;
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Practice levels";
+}
+@section styles{
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/Content/style.css">
+}
+
+<br /> <br />
+<table id="LangTable" style="margin: auto; text-align: center;" class="table table-striped table-responsive">
+    <thead>
+        <tr>
+            <th>
+                <h2>Practice Levels</h2>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @using (Hola.Models.ApplicationDbContext DB = new Hola.Models.ApplicationDbContext())
+        {
+            <!--Levels List-->
+            var levelList = DB.Questions.Where(w => w.LanguageID == Model.LanguageSelected).Select(w => w.Level).Distinct().ToList();
+            var i = 1; //Counter
+            foreach (var level in levelList)
+            {
+                <tr>
+                    <!--Language Name Cell-->
+                    <td id="LanguageName">
+                        <h4 style="margin: 15px 10px;max-width: 85%;">
+                            @Html.ActionLink($"Level: {level}", "QIndex", new Counter { LanguageSelected = Model.LanguageSelected, WordNum = 0, LevelSelected = i++ }, null)
+                        </h4>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+@section  Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.body-content').hide();
+            $('.body-content').fadeIn(800);
+        })
+    </script>
+}
+
+
+

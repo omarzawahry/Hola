@@ -1,0 +1,68 @@
+﻿@*@model Hola.Models.Counter*@
+@using Hola.Models;
+
+@{
+    ViewBag.Title = "Languages";
+}
+@section styles{
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/Content/style.css">
+
+    <!--IndexStyles-->
+    <link href="~/Content/LanguagesStyles.css" rel="stylesheet" />
+}
+
+<br /> <br />
+<table id="LangTable" style="margin: auto; text-align: center; max-width:50%;" class="table" >
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @using (Hola.Models.ApplicationDbContext DB = new Hola.Models.ApplicationDbContext())
+        {
+            <!--Language List-->
+            var langList = DB.Languages.Select(l => l).ToList();
+            var i = 1; //Counter
+
+            foreach (var lang in langList)
+            {
+                <tr>
+                    <!--Language Icon Cell-->
+                    <td id="LangIcon">
+                        <img style="margin: 10px 0px;max-width: 85%; " src="../../@lang.Icon"/>
+                    </td>
+
+                    <!--Language Name Cell-->
+                    <td id="LanguageName">
+                        <h3 style="margin: 10px 0px;max-width: 85%; position:relative; top: 20px; font-family: 'Ubuntu', sans-serif; color: black;" class="text-center"><b>@Html.ActionLink(@lang.Name, "Levels", new Counter { LanguageSelected = i }, null)</b></h3>
+                    </td>
+
+                    <!--Practice or Learn-->
+                    <td>
+                        <input style="display:inline; margin: 15px 10px; position: relative; top:10px;" id="learnBtn" class="btn btn-success" type="button" value="Learn"
+                               onclick="location.href='@Url.Action("Levels", "Home", new Counter { LanguageSelected = i}, null)'" />
+                        <input style="margin: 15px 5px 15px 0px; position: relative; top:10px;" id="practiceBtn" class="btn btn-primary" type="button" value="Practice!"
+                               onclick="location.href='@Url.Action("QLevels", "Home", new Counter { LanguageSelected = i++}, null)'" />
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+@section  Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.body-content').hide();
+            $('.body-content').fadeIn(800);
+        })
+    </script>
+}
+
+
+

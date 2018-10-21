@@ -1,0 +1,122 @@
+﻿@model Hola.Models.Counter
+@using Hola.Models;
+@{
+    ViewBag.Title = "Hola!";
+}
+@section styles{
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/Content/style.css">
+
+    <!--IndexStyles-->
+    <link href="~/Content/IndexStyles.css" rel="stylesheet" />
+    <style>
+        @@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-image: url(../../Graphics/languagesCover.jpg);
+            background-repeat: no-repeat;
+            background-size: 90%;
+            background-color: #55BCBB;
+            background-position: 85px 200px;
+        }
+    </style>
+}
+<br /><br />
+<div id="main-wrapper">
+    <div class="container-fluid" >
+        <div class="row">
+            <div class="jumbotron" id="jumbo">
+                @using (Hola.Models.ApplicationDbContext DB = new Hola.Models.ApplicationDbContext())
+                {
+                    <!-- lists -->
+                    var wordsList = DB.Words.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.WordText).ToList();
+                    var wordsEnglishList = DB.Words.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.WordEnglish).ToList();
+                    var audioList = DB.Words.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.VoicePath).ToList();
+                    var imgsList = DB.Words.Where(w => w.LanguageID == Model.LanguageSelected && w.Level == Model.LevelSelected).Select(w => w.ImagePath).ToList();
+
+                    if (@Model.WordNum >= 0 && Model.WordNum < @wordsList.Count)
+                    {
+                        <!--audio icon-->
+                        <span class="pull-right">
+                            <a href="#" id="audioIcon"><img id="audioIconImg" src="../../Graphics/speaker.png" /></a>
+                        </span>
+
+                        <!--Word Image-->
+                        <div id="wordImgDiv">
+                            <img id="" src="../../@imgsList[Model.WordNum]" />
+                        </div>
+
+                        <!--Word-->
+                        <h2 id="wordText" style="text-align: center;"><b>@wordsList[@Model.WordNum]</b></h2>
+                        <hr />
+
+                        <!--Word in English-->
+                        <h4 id="wordEnglish">@wordsEnglishList[@Model.WordNum]</h4>
+
+                        <audio id="wordAudio" src="../../@audioList[@Model.WordNum]" autoplay></audio>
+                    }
+
+                    if (Model.IsLevelDone)
+                    {
+                        <!--Finish Button-->
+                        <button id="nextBtn" class="btn btn-success pull-right"
+                                type="button"
+                                value="Next" data-toggle="modal" data-target="#levelDoneModal" @*onclick="location.href='@Url.Action("Levels", "Home", new Counter {LanguageSelected=Model.LanguageSelected}, null)'"*@>
+                            Finish
+                        </button>
+  
+                    }
+                    else
+                    {
+                        <!--Next Button-->
+                        <button id="nextBtn" class="btn btn-primary pull-right" 
+                                type="button" 
+                                value="Next" onclick="location.href='@Url.Action("NextWord", "Home", new Counter {LanguageSelected=Model.LanguageSelected, LevelSelected =Model.LevelSelected, WordNum =Model.WordNum }, null)'">
+                            Next
+                        </button>
+                    }
+                       
+                 }
+            </div>
+            
+            <!-- Modal -->
+            <div class="modal fade" id="levelDoneModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Level @Model.LevelSelected Completed Succesfully :D</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="text-align: center;">
+                            <h3 >Congratulations !!</h3>
+                            <i class="fas fa-check-circle" style="font-size:150px; color: #3f883f"></i>
+                        </div>
+                        <div class="modal-footer">
+                            <!--Again-->
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("NextWord", "Home", new Counter {LanguageSelected=Model.LanguageSelected, LevelSelected =Model.LevelSelected, WordNum=Model.WordNum, IsLevelDone= false }, null)'">Practice again <i class="fas fa-undo"></i></button>
+
+                            <!--Next level-->
+                            <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Home", new Counter {LanguageSelected = Model.LanguageSelected, WordNum = 0, LevelSelected = Model.LevelSelected+1, IsLevelDone=false}, null)'">Next level <i class="fas fa-angle-double-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section  Scripts {
+    <script>
+        $(document).ready(function () {
+            var wordAudio = document.getElementById("wordAudio");
+            $('.body-content').hide();
+            $('.body-content').fadeIn(800);
+            $('#audioIcon').click(function () {
+                wordAudio.paused == true ? wordAudio.play() : wordAudio.pause();
+            });
+        });
+    </script>
+}
